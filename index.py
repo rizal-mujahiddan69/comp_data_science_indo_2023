@@ -1,34 +1,53 @@
-import streamlit as st
+import numpy as np
+import pandas as pd
 import pickle
+import streamlit as st
 
-model_churn = pickle.load(open("models/churn_model.sav", "rb"))
+st.title("Model Logistik Regresi Mengenai Churn")
+
+model_churn = pickle.load(open("models/pipe.pkl", "rb"))
 
 left_col, right_col = st.columns(2)
 
 with left_col:
     tenure_months = st.number_input("Tenure Months", min_value=0)
     device_class = st.selectbox("Device Class", ("Low End", "Medium End", "High End"))
-    device_class = 1 if device_class == "High End" else 0
+    music_product = st.selectbox("have Music Product ?", ("No", "Yes"))
+    call_center = st.selectbox("have Call Center ?", ("No", "Yes"))
+    use_myapp = st.selectbox("have Use MyApp ?", ("No", "Yes"))
+    monthly_purchase = st.number_input("Monthly Purchase (Thou. IDR)", min_value=0)
 
 
 with right_col:
-    location = st.selectbox("Lokasi Pengguna?", ("Jakarta", "Bandung"))
-    location = 1 if location == "Jakarta" else 0
+    location = st.selectbox("Lokasi Pengguna ?", ("Jakarta", "Bandung"))
     games_product = st.selectbox("have Games Product ?", ("No", "Yes"))
-    games_product = 1 if games_product == "Yes" else 0
+    education_product = st.selectbox("have Education Product ?", ("No", "Yes"))
+    video_product = st.selectbox("have Video Product ?", ("No", "Yes"))
+    payment_method = st.selectbox(
+        "have Payment Method ?",
+        ("Pulsa", "Credit", "Digital Wallet", "Debit"),
+    )
+    cltv = st.number_input("CLTV (Predicted Thou. IDR)", min_value=0)
 
-st.write(games_product)
-st.write(model_churn)
-
-# df = pd.read_excel('Telco_customer_churn_adapted_v2.xlsx')
-# df = df.drop(columns=['Longitude', 'Latitude', 'Customer ID'])
-# scaler = MinMaxScaler()
-# columns_to_normalize = ["Tenure Months","Monthly Purchase (Thou. IDR)","CLTV (Predicted Thou. IDR)"]
-# df[columns_to_normalize] = scaler.fit_transform(df[columns_to_normalize])
-# df = df[df['Games Product'] != 'No internet service']
-# df[['Games Product','Music Product','Education Product','Call Center','Video Product','Use MyApp','Churn Label']] = (df[['Games Product','Music Product','Education Product','Call Center','Video Product','Use MyApp','Churn Label']] == 'Yes').astype(int)
-# df['Location'] = (df['Location'] == 'Jakarta').astype(int)
-# df['Device Class'] = (df['Device Class'] == 'High End').astype(int)
-# df = pd.get_dummies(df, columns=['Payment Method'])
-# X = df.drop(columns=['Churn Label'])
-# y = df['Churn Label']
+inputan = np.array(
+    [
+        [
+            tenure_months,
+            location,
+            device_class,
+            games_product,
+            music_product,
+            education_product,
+            call_center,
+            video_product,
+            use_myapp,
+            payment_method,
+            monthly_purchase,
+            cltv,
+        ]
+    ]
+)
+# st.write(inputan)
+input_var = pd.DataFrame(inputan, columns=model_churn.feature_names_in_)
+jawabannya = model_churn.predict(input_var)[0]
+st.write(f"Bahwa Customer itu churn ? {jawabannya}")
