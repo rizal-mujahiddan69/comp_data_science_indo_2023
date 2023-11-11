@@ -72,5 +72,5 @@ else:
 st.write(
     f"""
     Bahwa Customer itu churn ? __{hasilnya}__
-"""
+    """
 )
