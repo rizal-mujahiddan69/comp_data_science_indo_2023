@@ -1,53 +1,24 @@
-import numpy as np
-import pandas as pd
-import pickle
 import streamlit as st
 
-st.title("Model Logistik Regresi Mengenai Churn")
+st.title("Keterangan")
 
-model_churn = pickle.load(open("models/pipe.pkl", "rb"))
-
-left_col, right_col = st.columns(2)
-
-with left_col:
-    tenure_months = st.number_input("Tenure Months", min_value=0)
-    device_class = st.selectbox("Device Class", ("Low End", "Medium End", "High End"))
-    music_product = st.selectbox("have Music Product ?", ("No", "Yes"))
-    call_center = st.selectbox("have Call Center ?", ("No", "Yes"))
-    use_myapp = st.selectbox("have Use MyApp ?", ("No", "Yes"))
-    monthly_purchase = st.number_input("Monthly Purchase (Thou. IDR)", min_value=0)
-
-
-with right_col:
-    location = st.selectbox("Lokasi Pengguna ?", ("Jakarta", "Bandung"))
-    games_product = st.selectbox("have Games Product ?", ("No", "Yes"))
-    education_product = st.selectbox("have Education Product ?", ("No", "Yes"))
-    video_product = st.selectbox("have Video Product ?", ("No", "Yes"))
-    payment_method = st.selectbox(
-        "have Payment Method ?",
-        ("Pulsa", "Credit", "Digital Wallet", "Debit"),
-    )
-    cltv = st.number_input("CLTV (Predicted Thou. IDR)", min_value=0)
-
-inputan = np.array(
-    [
-        [
-            tenure_months,
-            location,
-            device_class,
-            games_product,
-            music_product,
-            education_product,
-            call_center,
-            video_product,
-            use_myapp,
-            payment_method,
-            monthly_purchase,
-            cltv,
-        ]
-    ]
+st.markdown(
+    """
+    * __Customer ID__ (A unique customer identifier)
+* __Tenure Months__ (How long the customer has been with the company by the end of the quarter specified above)
+* __Location__ (Customer's residence - City)
+* __Device Class__ (Device classification)
+* __Games Product__ (Whether the customer uses the internet service for games product)
+* __Music Product__ (Whether the customer uses the internet service for music product)
+* __Education Product__ (Whether the customer uses the internet service for education product)
+* __Call Center__ (Whether the customer uses the call center service)
+* __Video Product__ (Whether the customer uses video product service)
+* __Use MyApp__ (Whether the customer uses MyApp service)
+* __Payment Method__ (The method used for paying the bill)
+* __Monthly Purchase__ (Total customer’s monthly spent for all services with the unit of thousands of IDR)
+* __Churn Label__ (Whether the customer left the company in this quarter)
+* __Longitude__ (Customer’s residence - Longitude)
+* __Latitude__ (Customer’s residence - Latitude)
+* __CLTV__ (Customer Lifetime Value with the unit of thousands of IDR - Calculated using company's formulas)
+    """
 )
-# st.write(inputan)
-input_var = pd.DataFrame(inputan, columns=model_churn.feature_names_in_)
-jawabannya = model_churn.predict(input_var)[0]
-st.write(f"Bahwa Customer itu churn ? {jawabannya}")
